@@ -1,23 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
-#define ROWS    30000
-#define COLUMNS 30000
+#define ROWS    3000
+#define COLUMNS ROWS
 #define SCALAR  7
 #define VALUE   56
 
 int main()
 {
-    // initialize matrix
-    //int (*arr) [ROWS] = malloc(ROWS*COLUMNS*sizeof(int));
-    int** arr = NULL;
-    int* arrData = NULL;
-    arr = malloc(sizeof(int *) * ROWS);
-    arrData = malloc(sizeof(int) * COLUMNS * ROWS);
+    struct timeval start, end;
 
-    for(int i = 0; i < ROWS; i++)
-        arr[i]  = arrData + i * COLUMNS;
-
+    int (*arr) [ROWS] = malloc(ROWS*COLUMNS*sizeof(int));
     for(int i = 0; i < ROWS; i++)
     {
         for(int j = 0; j < COLUMNS; j++)
@@ -25,17 +19,26 @@ int main()
             arr[i][j] = VALUE;
         }
     }
-    // multiply by scalar
-    for(int i = 0; i < ROWS; i++)
+
+    for(int i = 0; i < 10; i++)
     {
-        for(int j = 0; j < COLUMNS; j++)
+        gettimeofday(&start, NULL);
+        for(int j = 0; j < ROWS; j++)
         {
-            arr[i][j] *= SCALAR;
+            for(int k = 0; k < COLUMNS; k++)
+            {
+                arr[j][k] *= SCALAR;
+            }
         }
+        gettimeofday(&end, NULL);
+        long long microsecondsStart = start.tv_sec * 1000000 + start.tv_usec;
+        long long microsecondsEnd = end.tv_sec * 1000000 + end.tv_usec;
+        long long div = microsecondsEnd - microsecondsStart;
+
+        printf("%lld.%06lld\n", div / 1000000, div % 1000000);
     }
 
-    // free memory
-    free(arrData);
     free(arr);
+    arr = NULL;
     return 0;
 }
