@@ -1,36 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct {
-    char* name;
-    char* dob;
-    char* day;
+    char name[50];
+    char dob[50];
+    char day[50];
 } delegate;
+
+bool readFile(char* name, delegate* de[643]);
+void freeMemory(delegate* de[643]);
 
 int main()
 {
-    delegate* del[50];
-    FILE* fp = fopen("kms_ex09_bundestagsabgeordnete.csv", "r");
+    delegate* del[643];
+    if (readFile("kms_ex09_bundestagsabgeordnete.csv", del))
+    {
+        for(int i = 0; i < 100; i++)
+        {
+            printf("%s,%s,%s\n", del[i]->name, del[i]->dob, del[i]->day);
+        }
+        freeMemory(del);
+    }
+    return 0;
+}
+
+bool readFile(char* name, delegate* de[643])
+{
+    FILE* fp = fopen(name, "r");
     if(fp != NULL)
     {
         char buff[100];
-        if (fgets(buff, 100, fp) == NULL);
-        for(int i = 0; i < 50; i++)
+        if (fgets(buff, 99, fp) == NULL);
+        for(int i = 0; i < 643; i++)
         {
-            if(fgets(buff, 100, fp) != NULL)
+            if(fgets(buff, 99, fp) != NULL)
             {
                 delegate* d = malloc(sizeof(delegate));
-                d->name = strtok(buff, ",");
-                d->dob = strtok(NULL, ",");
-                d->day = strtok(NULL, ",");
-                del[i] = d;
+                strcpy(d->name, strtok(buff, ","));
+                strcpy(d->dob, strtok(NULL, ","));
+                strcpy(d->day, strtok(NULL, ","));
+                de[i] = d;
                 //printf("%s,%s,%s\n", d->name, d->dob, d->day);
             }
         }
         fclose(fp);
-        printf("%s,%s,%s\n", del[44]->name, del[44]->dob, del[44]->day);
-        for(int i = 0; i < 50; i++)
-            free(del[i]);
+        return true;
     }
-    return 0;
+    else
+        return false;
+}
+
+void freeMemory(delegate* de[643])
+{
+    for(int i = 0; i < 643; i++)
+        free(de[i]);
 }
